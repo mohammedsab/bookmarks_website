@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-_4nv#=!e9(s4kdp5qp=y)l1)_66utk3*)qx1&tsfj36^!7tpxn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mysite.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -34,12 +34,22 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'account.apps.AccountConfig',
 
+    'social_django',
+    'django_extensions',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'account.authentication.EmailAuthBackend',
+    'social_core.backends.facebook.FacebookOAuth2',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +67,9 @@ ROOT_URLCONF = 'bookmarks.urls'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+
+SOCIAL_AUTH_FACEBOOK_KRY = '3263788127175254'
+SOCIAL_AUTH_FACEBOOK_SECRET = '986badaa3d25fbeff138d79bf04c2647'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
