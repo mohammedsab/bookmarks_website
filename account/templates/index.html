@@ -28,7 +28,7 @@
                     <a href="{% url 'edit' %}">Edit profile</a>
                 </li>
                 <li {% if section == "images" %}class="selected"{% endif %}>
-                    <a href="#">Images</a>
+                    <a href="{% url 'images:create' %}">Images</a>
                 </li>
                 <li {% if section == "people" %}class="selected"{% endif %}>
                     <a href="#">People</a>
