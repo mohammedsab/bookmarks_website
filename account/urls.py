@@ -32,7 +32,12 @@ urlpatterns = [
      # Social Auth
      path('social-auth/', include('social_django.urls',namespace='social')),
 
-    #  users page and profile
+    #  users page 
     path('users/', views.user_list, name='user_list'),
+    # user follow
+    path('users/follow/', views.user_follow, name='user_follow'),
+    # user profile
     path('users/<username>/', views.user_detial, name='user_detail'),
+
+    
 ]
