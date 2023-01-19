@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from common.decorators import ajax_required
 
@@ -82,13 +82,20 @@ def image_like(request):
     if image_id and action:
         try:
             image = Image.objects.get(id=image_id)
+            
             if action == 'like':
                 image.users_like.add(request.user)
+                users_likes = list(image.users_like.all().values())
+                # users_likes = 'liked'
+                # print(image.users_like.all())
 
             else:
                 image.users_like.remove(request.user)
-            return JsonResponse({'status': 'ok'})
+                users_likes = list(image.users_like.all().values())
+                
+            return JsonResponse({'status': 'ok', 'users_likes': users_likes})
         except:
             pass
 
     return JsonResponse({'status': 'error'})
+
