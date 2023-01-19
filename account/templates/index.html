@@ -15,40 +15,8 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
     <script src="{% static 'js/fontawesome-all.min.js' %}"></script> {% endcomment %}
-    
-    <div id="header">
-        <span class="logo">Bookmarks</span>
-        
-        {% if request.user.is_authenticated %}
-            <ul class="menu">
-                <li {% if section == "dashboard" %}class="selected"{% endif %}>
-                    <a href="{% url 'dashboard' %}">My dashboard</a>
-                </li>
-                <li {% if section == "edit" %}class="selected"{% endif %}>
-                    <a href="{% url 'edit' %}">Edit profile</a>
-                </li>
-                <li {% if section == "images" %}class="selected"{% endif %}>
-                    <a href="{% url 'images:list' %}">Images</a>
-                </li>
-                <li {% if section == "people" %}class="selected"{% endif %}>
-                    <a href="#">People</a>
-                </li>
-                <li {% if section == "password_change" %}class="selected"{% endif %}>
-                    <a href="{% url 'password_change' %}">Change password</a>
-                </li>
-                </ul>
-        {% endif %}
 
-        <span class="user">
-            {% if request.user.is_authenticated %}
-              Hello {{request.user.first_name}} {{request.user.last_name}}
-              <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Log-in</a>
-            {% endif %}
-        </span>
-            
-    </div>
+    {% include 'componant/navbar.html' %}
 
     
     {% if messages %}
