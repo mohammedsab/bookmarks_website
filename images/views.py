@@ -4,10 +4,13 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_POST
+from django.conf import settings
 
 from common.decorators import ajax_required
 from actions.utils import create_action
+
+import redis
 
 from .models import Image
 from .forms import ImageCreateForm
@@ -24,7 +27,6 @@ def image_list(request):
     images = Image.objects.all()
     paginator = Paginator(images, 8)
     page = request.GET.get('page')
-    
 
     try:
         images = paginator.page(page)
@@ -69,10 +71,33 @@ def image_create(request):
     return render(request, 'images/image/create.html', {'section': 'image', 'form': form})
 
 
+# Connection to data base
+r = redis.Redis(host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT, db=settings.REDIS_DB)
+
+
 def image_detail(request, id, slug):
     image = get_object_or_404(Image, id=id, slug=slug)
+    # Increment total image views by 1
+    total_views = r.incr(f'image:{image.id}:views')
+    # Increment image ranking by 1
+    r.zincrby('image_ranking', 1, image.id)
     return render(request, 'images/image/detail.html',
-                  {'section': 'images', 'image': image})
+                  {'section': 'images', 'image': image, 'total_views': total_views})
+
+
+@login_required
+def image_ranking(request):
+    # Get inage ranking dect.
+    image_ranking = r.zrange('image_ranking', 0, -1, desc=True)[:10]
+    image_ranking_ids = [int(id) for id in image_ranking]
+
+    # Get most viewed images
+    most_viewed = list(Image.objects.filter(id__in=image_ranking_ids))
+    most_viewed.sort(key=lambda x: image_ranking_ids.index(x.id))
+
+    return render(request, 'images/image/ranking.html',
+                  {'section': 'images_ranking', 'most_viewed': most_viewed})
 
 
 @ajax_required
@@ -84,7 +109,7 @@ def image_like(request):
     if image_id and action:
         try:
             image = Image.objects.get(id=image_id)
-            
+
             if action == 'like':
                 image.users_like.add(request.user)
                 users_likes = list(image.users_like.all().values())
@@ -95,10 +120,9 @@ def image_like(request):
             else:
                 image.users_like.remove(request.user)
                 users_likes = list(image.users_like.all().values())
-                
+
             return JsonResponse({'status': 'ok', 'users_likes': users_likes})
         except:
             pass
 
     return JsonResponse({'status': 'error'})
-

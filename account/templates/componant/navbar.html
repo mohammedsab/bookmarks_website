@@ -3,6 +3,7 @@
   {% if request.user.is_authenticated %}
     <a {% if section == "dashboard" %}class="selected"{% endif %} href="{% url 'dashboard' %}">My dashboard</a>
     <a {% if section == "images" %}class="selected"{% endif %} href="{% url 'images:list' %}">Images</a>
+    <a {% if section == "images_ranking" %}class="selected"{% endif %} href="{% url 'images:ranking' %}">Most view</a>
     <a {% if section == "people" %}class="selected"{% endif %} href="{% url 'user_list' %}">People</a>
 
   {% endif %}
